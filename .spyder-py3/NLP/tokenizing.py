@@ -1,8 +1,12 @@
+import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem  import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 
 ps = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
 text_example = """Diverse and impactful on a number of fronts, CruzHacks 2019 was a success. 
                 From January 18 to January 20, 2019, UCSC’s Stevenson Event Center was transformed into a bustling playground for our 
                 diverse group of over 600 hackers to turn their visions for social change into tangible projects. 
@@ -34,12 +38,28 @@ for w in words:
         filtered_text.append(w)
         
 print(filtered_text)
-
+    
 # =============================================================================
 # Stemming
 # =============================================================================
 for w in words:
-    print(ps.stem(w))
+   print(ps.stem(w))
+   
+# =============================================================================
+# Lemmatizing
+# =============================================================================
+
+#default is a noun
+   
+#print(lemmatizer.lemmatize("dogs"))
+#print(lemmatizer.lemmatize("geese"))
+#print(lemmatizer.lemmatize("better"))
+#print(lemmatizer.lemmatize("better", pos="a"))
+
+
+
+for w in words:
+    print(lemmatizer.lemmatize(w))
 
 
 # =============================================================================
@@ -59,7 +79,7 @@ sent = sent_tokenize(text_example)
 #process_content()
 
 # =============================================================================
-# Chunking using POS tags & regular expression
+# Chunking/Chinking using POS tags & regular expression
 # =============================================================================
 def process_content():
     try:
@@ -67,7 +87,8 @@ def process_content():
             words = nltk.word_tokenize(i)
             tagged = nltk.pos_tag(words)
             
-            chunkGram = r"""Chunk: {<RB.?>*<VB.?>*<NNP><NN>?}"""
+            chunkGram = r"""Chunk: {<RB.?>*<VB.?>*<NNP><NN>?}
+                                           }<VB.?|IN|DT>+{"""
             
             chunkParser = nltk.RegexpParser(chunkGram)
             chunked = chunkParser.parse(tagged)
@@ -79,3 +100,24 @@ def process_content():
         print(str(e))
 
 process_content()
+
+# =============================================================================
+# Name Entity Recognition
+# =============================================================================
+
+def process_content():
+    try:
+        for i in sent:
+            words = nltk.word_tokenize(i)
+            tagged = nltk.pos_tag(words)
+            
+            namedEnt = nltk.ne_chunk(tagged)            
+            
+            #print(chunked)
+            namedEnt.draw()
+            
+    except Exception as e:
+        print(str(e))
+
+process_content()
+
